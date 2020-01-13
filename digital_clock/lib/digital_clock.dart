@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:digital_clock/facts.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-/// A basic digital clock.
-///
-/// You can do better than this!
 class DigitalClock extends StatefulWidget {
   const DigitalClock(this.model);
 
@@ -19,6 +19,7 @@ class DigitalClock extends StatefulWidget {
 class _DigitalClockState extends State<DigitalClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
+  FactProvider _factProvider;
 
   @override
   void initState() {
@@ -26,6 +27,12 @@ class _DigitalClockState extends State<DigitalClock> {
     widget.model.addListener(_updateModel);
     _updateTime();
     _updateModel();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _factProvider = Provider.of(context);
   }
 
   @override
@@ -54,8 +61,6 @@ class _DigitalClockState extends State<DigitalClock> {
   void _updateTime() {
     setState(() {
       _dateTime = DateTime.now();
-      // Update once per minute. If you want to update every second, use the
-      // following code.
       _timer = Timer(
         Duration(minutes: 1) -
             Duration(seconds: _dateTime.second) -
@@ -67,11 +72,10 @@ class _DigitalClockState extends State<DigitalClock> {
 
   @override
   Widget build(BuildContext context) {
-    final hour =
-        DateFormat(widget.model.is24HourFormat ? 'H' : 'h').format(_dateTime);
+    final is24HourFormat = widget.model.is24HourFormat;
+    final hour = DateFormat(is24HourFormat ? 'H' : 'h').format(_dateTime);
     final minute = DateFormat('mm').format(_dateTime);
-    final marker =
-        widget.model.is24HourFormat ? '' : DateFormat('a').format(_dateTime);
+    final marker = is24HourFormat ? '' : DateFormat('a').format(_dateTime);
 
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -83,50 +87,58 @@ class _DigitalClockState extends State<DigitalClock> {
       height: 1,
     );
     final markerStyle = defaultStyle.copyWith(fontSize: screenWidth * 0.1);
-    final descriptionStyle = TextStyle(
-      color: Colors.white,
+    final descriptionStyle = defaultStyle.copyWith(
       fontFamily: 'Roboto',
       fontSize: screenWidth * 0.04,
-      height: 1,
     );
 
     final clockContentWidth = screenWidth / 2;
+    final fact = _factProvider.getForTime(_dateTime);
 
-    return Container(
-      color: Colors.black,
-      alignment: Alignment.centerLeft,
-      child: Container(
-        width: clockContentWidth,
-        alignment: Alignment.center,
-        child: Row(
-          children: <Widget>[
-            Flexible(flex: 52, child: Container()),
-            Flexible(
-              flex: 200,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Row(
-                    textBaseline: TextBaseline.alphabetic,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
+    return Stack(
+      children: <Widget>[
+        Container(
+          color: fact.color,
+          child: FlareActor(
+            'assets/${fact.animation}.flr',
+            fit: BoxFit.fill,
+            animation: fact.animation,
+            alignment: Alignment.center,
+          ),
+        ),
+        Container(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: clockContentWidth,
+            alignment: Alignment.center,
+            child: Row(
+              children: <Widget>[
+                Flexible(flex: 52, child: Container()),
+                Flexible(
+                  flex: 210,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Text('$hour:$minute', style: defaultStyle),
-                      Container(width: 16),
-                      Text(marker, style: markerStyle)
+                      Row(
+                        textBaseline: TextBaseline.alphabetic,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: <Widget>[
+                          Text('$hour:$minute', style: defaultStyle),
+                          Container(width: 8),
+                          Text(marker, style: markerStyle)
+                        ],
+                      ),
+                      Text(fact.description, style: descriptionStyle),
                     ],
                   ),
-                  Text(
-                    'coffee was discovered by a goat herder',
-                    style: descriptionStyle,
-                  ),
-                ],
-              ),
+                ),
+                Flexible(flex: 31, child: Container()),
+              ],
             ),
-            Flexible(flex: 31, child: Container()),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
