@@ -1,30 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
-import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_clock_helper/model.dart';
 import 'package:intl/intl.dart';
-
-enum _Element {
-  background,
-  text,
-  shadow,
-}
-
-final _lightTheme = {
-  _Element.background: Color(0xFF81B3FE),
-  _Element.text: Colors.white,
-  _Element.shadow: Colors.black,
-};
-
-final _darkTheme = {
-  _Element.background: Colors.black,
-  _Element.text: Colors.white,
-  _Element.shadow: Color(0xFF174EA6),
-};
 
 /// A basic digital clock.
 ///
@@ -84,49 +62,69 @@ class _DigitalClockState extends State<DigitalClock> {
             Duration(milliseconds: _dateTime.millisecond),
         _updateTime,
       );
-      // Update once per second, but make sure to do it at the beginning of each
-      // new second, so that the clock is accurate.
-      // _timer = Timer(
-      //   Duration(seconds: 1) - Duration(milliseconds: _dateTime.millisecond),
-      //   _updateTime,
-      // );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).brightness == Brightness.light
-        ? _lightTheme
-        : _darkTheme;
     final hour =
-        DateFormat(widget.model.is24HourFormat ? 'HH' : 'hh').format(_dateTime);
+        DateFormat(widget.model.is24HourFormat ? 'H' : 'h').format(_dateTime);
     final minute = DateFormat('mm').format(_dateTime);
-    final fontSize = MediaQuery.of(context).size.width / 3.5;
-    final offset = -fontSize / 7;
+    final marker =
+        widget.model.is24HourFormat ? '' : DateFormat('a').format(_dateTime);
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final fontSize = screenWidth * 0.28;
     final defaultStyle = TextStyle(
-      color: colors[_Element.text],
-      fontFamily: 'PressStart2P',
+      color: Colors.white,
+      fontFamily: 'SixCaps',
       fontSize: fontSize,
-      shadows: [
-        Shadow(
-          blurRadius: 0,
-          color: colors[_Element.shadow],
-          offset: Offset(10, 0),
-        ),
-      ],
+      height: 1,
+    );
+    final markerStyle = defaultStyle.copyWith(fontSize: screenWidth * 0.1);
+    final descriptionStyle = TextStyle(
+      color: Colors.white,
+      fontFamily: 'Roboto',
+      fontSize: screenWidth * 0.04,
+      height: 1,
     );
 
+    final clockContentWidth = screenWidth / 2;
+
     return Container(
-      color: colors[_Element.background],
-      child: Center(
-        child: DefaultTextStyle(
-          style: defaultStyle,
-          child: Stack(
-            children: <Widget>[
-              Positioned(left: offset, top: 0, child: Text(hour)),
-              Positioned(right: offset, bottom: offset, child: Text(minute)),
-            ],
-          ),
+      color: Colors.black,
+      alignment: Alignment.centerLeft,
+      child: Container(
+        width: clockContentWidth,
+        alignment: Alignment.center,
+        child: Row(
+          children: <Widget>[
+            Flexible(flex: 52, child: Container()),
+            Flexible(
+              flex: 200,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Row(
+                    textBaseline: TextBaseline.alphabetic,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    children: <Widget>[
+                      Text('$hour:$minute', style: defaultStyle),
+                      Container(width: 16),
+                      Text(marker, style: markerStyle)
+                    ],
+                  ),
+                  Text(
+                    'coffee was discovered by a goat herder',
+                    style: descriptionStyle,
+                  ),
+                ],
+              ),
+            ),
+            Flexible(flex: 31, child: Container()),
+          ],
         ),
       ),
     );

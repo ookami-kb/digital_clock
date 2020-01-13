@@ -19,6 +19,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: PressStart2P
+    - family: SixCaps
       fonts:
-        - asset: third_party/PressStart2P-Regular.ttf
+        - asset: third_party/SixCaps-Regular.ttf
+    - family: Roboto
+      fonts:
+        - asset: third_party/RobotoCondensed-Regular.ttf
