@@ -58,16 +58,13 @@ class _DigitalClockState extends State<DigitalClock> {
     });
   }
 
-  int _ms = 0;
-
   void _updateTime() {
     setState(() {
-      _ms += 60 * 1000;
-      _dateTime = DateTime.fromMillisecondsSinceEpoch(_ms);
+      _dateTime = DateTime.now();
       _timer = Timer(
-//        Duration(minutes: 1) -
-        Duration(milliseconds: 100),
-//            Duration(milliseconds: _dateTime.millisecond),
+        Duration(minutes: 1) -
+            Duration(seconds: _dateTime.second) -
+            Duration(milliseconds: _dateTime.millisecond),
         _updateTime,
       );
     });
