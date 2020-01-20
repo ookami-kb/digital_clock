@@ -116,21 +116,23 @@ class _DigitalClockState extends State<DigitalClock> {
                 Flexible(flex: 52, child: Container()),
                 Flexible(
                   flex: 210,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Row(
-                        textBaseline: TextBaseline.alphabetic,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        children: <Widget>[
-                          Text('$hour:$minute', style: defaultStyle),
-                          Container(width: 8),
-                          Text(marker, style: markerStyle)
-                        ],
-                      ),
-                      Text(fact.description, style: descriptionStyle),
-                    ],
+                  child: Padding(
+                    padding: EdgeInsets.only(top: screenWidth * 0.08),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          textBaseline: TextBaseline.alphabetic,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          children: <Widget>[
+                            Text('$hour:$minute', style: defaultStyle),
+                            Container(width: 8),
+                            Text(marker, style: markerStyle)
+                          ],
+                        ),
+                        Text(fact.description, style: descriptionStyle),
+                      ],
+                    ),
                   ),
                 ),
                 Flexible(flex: 31, child: Container()),
