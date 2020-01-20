@@ -4,7 +4,8 @@
 
 import 'dart:io';
 
-import 'package:digital_clock/facts.dart';
+import 'package:digital_clock/fact.dart';
+import 'package:digital_clock/view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/customizer.dart';
@@ -23,7 +24,7 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   }
 
-  final factProvider = FactProvider();
+  final factProvider = ViewProvider(FactProvider());
   // This creates a clock that enables you to customize it.
   //
   // The [ClockCustomizer] takes in a [ClockBuilder] that consists of:

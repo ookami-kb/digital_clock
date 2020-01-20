@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:digital_clock/facts.dart';
+import 'package:digital_clock/view.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
@@ -19,7 +19,7 @@ class DigitalClock extends StatefulWidget {
 class _DigitalClockState extends State<DigitalClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
-  FactProvider _factProvider;
+  ViewProvider _factProvider;
 
   @override
   void initState() {
@@ -58,13 +58,16 @@ class _DigitalClockState extends State<DigitalClock> {
     });
   }
 
+  int _ms = 0;
+
   void _updateTime() {
     setState(() {
-      _dateTime = DateTime.now();
+      _ms += 60 * 1000;
+      _dateTime = DateTime.fromMillisecondsSinceEpoch(_ms);
       _timer = Timer(
-        Duration(minutes: 1) -
-            Duration(seconds: _dateTime.second) -
-            Duration(milliseconds: _dateTime.millisecond),
+//        Duration(minutes: 1) -
+        Duration(milliseconds: 100),
+//            Duration(milliseconds: _dateTime.millisecond),
         _updateTime,
       );
     });
@@ -130,7 +133,7 @@ class _DigitalClockState extends State<DigitalClock> {
                             Text(marker, style: markerStyle)
                           ],
                         ),
-                        Text(fact.description, style: descriptionStyle),
+                        Text(fact.fact, style: descriptionStyle),
                       ],
                     ),
                   ),
