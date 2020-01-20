@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:digital_clock/fact.dart';
+import 'package:digital_clock/utils.dart';
 
 class View {
   View(this.animation, this.fact, this.color);
@@ -8,13 +9,6 @@ class View {
   final String animation;
   final String fact;
   final Color color;
-}
-
-class TimeOfDay {
-  TimeOfDay(this.color, this.start);
-
-  final Color color;
-  final DateTime start;
 }
 
 class ViewProvider {
@@ -38,8 +32,7 @@ class ViewProvider {
     final evening = TimeOfDay(const Color(0xFF4F4F4F), time.withHour(16));
     final night = TimeOfDay(const Color(0xFF3D2260), time.withHour(18));
     final sleep = TimeOfDay(const Color(0xFF132835), time.withHour(22));
-    final tomorrow =
-        TimeOfDay(morning.color, morning.start.add(Duration(days: 1)));
+    final tomorrow = TimeOfDay(morning.color, morning.start.nextDay());
 
     if (time.isBetween(morning.start, forenoon.start))
       return View(
@@ -83,13 +76,6 @@ class ViewProvider {
       _getColor(time, sleep, tomorrow),
     );
   }
-}
-
-extension on DateTime {
-  DateTime withHour(int hour) => DateTime(year, month, day, hour);
-
-  bool isBetween(DateTime from, DateTime to) =>
-      (isAfter(from) || isAtSameMomentAs(from)) && isBefore(to);
 }
 
 Color _getColor(DateTime current, TimeOfDay from, TimeOfDay to) {
